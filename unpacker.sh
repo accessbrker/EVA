@@ -13,6 +13,7 @@ already_pwned(){
         exit 1
     else
         return 1
+    fi
 }
 
 delete_entrypoints(){
